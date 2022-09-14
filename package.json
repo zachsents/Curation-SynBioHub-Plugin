@@ -1,0 +1,21 @@
+{
+  "name": "curation-plugin-test",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node ./index.js",
+    "dev": "npx nodemon ./index.js",
+    "build": "cd run-form && npm run build"
+  },
+  "dependencies": {
+    "chalk": "^5.0.1",
+    "express": "~4.16.1",
+    "morgan": "~1.9.1",
+    "node-fetch": "^3.2.10",
+    "sbolgraph": "^0.51.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.19"
+  },
+  "type": "module"
+}
