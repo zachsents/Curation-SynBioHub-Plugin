@@ -3,19 +3,27 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node ./index.js",
-    "dev": "npx nodemon ./index.js",
-    "build": "cd run-form && npm run build"
+    "start": "NODE_ENV=production node ./server/index.js",
+    "dev": "npx nodemon --watch server ./server/index.js",
+    "build:client": "vite build --outDir dist/client",
+    "build:server": "vite build --outDir dist/server --ssr server/ssrEntry.jsx",
+    "build": "npm run build:client && npm run build:server"
   },
   "dependencies": {
     "chalk": "^5.0.1",
     "express": "~4.16.1",
     "morgan": "~1.9.1",
     "node-fetch": "^3.2.10",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
     "sbolgraph": "^0.51.0"
   },
   "devDependencies": {
-    "nodemon": "^2.0.19"
+    "@types/react": "^18.0.20",
+    "@types/react-dom": "^18.0.6",
+    "@vitejs/plugin-react": "^2.1.0",
+    "nodemon": "^2.0.19",
+    "vite": "^3.1.0"
   },
   "type": "module"
 }

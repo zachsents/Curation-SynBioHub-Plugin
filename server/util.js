@@ -2,14 +2,6 @@ import { exec } from "child_process"
 import fs from "fs/promises"
 import { Graph, SBOL2GraphView } from "sbolgraph"
 
-export async function injectGlobalsInHtml(htmlFile, objectToInject) {
-    const htmlContent = await fs.readFile("./run-form/dist/index.html", "utf-8")
-
-    return htmlContent.replace("</title>", `$&
-    <script>
-        window.curationPlugin = ${JSON.stringify(objectToInject)}
-    </script>`)
-}
 
 export function execPromise(command, options) {
     return new Promise((resolve, reject) => {
@@ -57,4 +49,10 @@ export async function findNewAnnotations(originalContent, annotatedContent) {
             pid: sa.persistentIdentity,
             location: [sa.rangeMin, sa.rangeMax]
         }))
+}
+
+export async function renderFrontend() {
+    const template = await fs.readFile("./dist/client/client/index.html", "utf8")
+    const { render } = await import("../dist/server/ssrEntry.js")
+    return template.replace("<!--ssr-outlet-->", await render())
 }

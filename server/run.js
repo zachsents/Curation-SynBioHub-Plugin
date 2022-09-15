@@ -1,9 +1,8 @@
-import { execPromise, findNewAnnotations, injectGlobalsInHtml, runSynbict } from "./util.js"
+import { findNewAnnotations, renderFrontend, runSynbict } from "./util.js"
 import fetch from "node-fetch"
 import fs from "fs/promises"
 import path from "path"
 import os from "os"
-import { Graph, SBOL2GraphView } from "sbolgraph"
 import chalk from "chalk"
 
 // need this for windows
@@ -70,15 +69,11 @@ export default function run(app) {
         console.log(chalk.gray("Created ") + chalk.green(annotations.length) + chalk.gray(" annotations:"))
         console.log(chalk.green(annotations.map(a => a.name).join(", ")))
 
-        // read in HTML for form
-        // const formHtml = await injectGlobalsInHtml("./run-form/dist/index.html", {
-        //     complete_sbol
-        // })
 
         res.status(200).send({
             needs_interface: true,
             own_interface: true,
-            // interface: formHtml,
+            interface: await renderFrontend(),
             annotations
         })
     })
