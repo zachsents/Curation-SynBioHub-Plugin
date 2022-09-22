@@ -1,9 +1,12 @@
-import { findNewAnnotations, renderFrontend, runSynbict } from "./util.js"
+import { findNewAnnotations, getSequence, isProduction, pullFreeText, renderFrontend } from "./util.js"
 import fetch from "node-fetch"
 import fs from "fs/promises"
 import path from "path"
 import os from "os"
 import chalk from "chalk"
+import { runSynbict } from "./modules/synbict.js"
+import { runBiobert } from "./modules/biobert.js"
+import { generateLink } from "./modules/devServer.js"
 
 // need this for windows
 process.env.ComSpec = "powershell"
@@ -39,13 +42,13 @@ export default function run(app) {
         await fs.writeFile(originalFile, completeSbolContent)
 
         console.log(chalk.gray("Downloaded SBOL file."))
-        
+
         // read in all feature libraries -- SYNBICT says they support
         // directories, but they actually don't; only lists of files
         const featureLibrariesDir = "./feature-libraries"
         const featureLibraries = (await fs.readdir(featureLibrariesDir))
-        .map(libraryFileName => path.join(featureLibrariesDir, libraryFileName))
-        
+            .map(libraryFileName => path.join(featureLibrariesDir, libraryFileName))
+
         console.log(chalk.gray("Running SYNBICT..."))
 
         // Run SYNBICT
@@ -60,21 +63,37 @@ export default function run(app) {
 
         console.log(chalk.gray("SYNBICT has completed."))
 
-        // find new annotations
-        const annotations = await findNewAnnotations(
+        // find new annotations from synbict annotated doc
+        const synbictAnnotations = await findNewAnnotations(
             completeSbolContent,
             await fs.readFile(annotatedFile, "utf8")
         )
 
-        console.log(chalk.gray("Created ") + chalk.green(annotations.length) + chalk.gray(" annotations:"))
-        console.log(chalk.green(annotations.map(a => a.name).join(", ")))
+        console.log(chalk.gray("Created ") + chalk.green(synbictAnnotations.length) + chalk.gray(" annotations:"))
+        console.log(chalk.green(synbictAnnotations.map(a => a.name).join(", ")))
 
+        console.log(chalk.gray("Running BioBert BERN2..."))
+
+        // do biobert annotation on free text
+        const freeText = await pullFreeText(completeSbolContent)
+        const biobertResult = await runBiobert(freeText.join(" "))
+
+        console.log(chalk.gray("BioBert BERN2 has completed."))
+
+        const sequence = await getSequence(completeSbolContent)
+
+        const clientContext = {
+            sequence: sequence,
+            sequenceAnnotations: synbictAnnotations,
+        }
 
         res.status(200).send({
             needs_interface: true,
             own_interface: true,
-            interface: await renderFrontend(),
-            annotations
+            interface: isProduction() ?
+                await renderFrontend(req.originalUrl, clientContext) :
+                generateLink(clientContext),
+            sequenceAnnotations: synbictAnnotations,
         })
     })
 }

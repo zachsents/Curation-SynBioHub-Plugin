@@ -1,9 +1,13 @@
 import React from 'react'
+import { useAppContext } from './context'
 import CurationForm from './CurationForm'
 
 export default function App() {
+
+    const { sequence, sequenceAnnotations } = useAppContext()
+
     return (
-        <CurationForm sequence={exampleSequence} annotations={exampleAnnotations} />
+        <CurationForm sequence={sequence ?? exampleSequence} annotations={sequenceAnnotations ?? exampleAnnotations} />
     )
 }
 

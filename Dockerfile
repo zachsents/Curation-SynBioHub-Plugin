@@ -16,8 +16,8 @@ COPY . .
 # install Node deps
 RUN npm install
 
-# setup & build frontend
-RUN cd run-form && npm install && npx vite build
+# build
+RUN npm run build
 
 # clone in SYNBICT
 RUN git clone https://github.com/SD2E/SYNBICT

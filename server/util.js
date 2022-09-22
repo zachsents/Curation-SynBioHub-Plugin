@@ -15,16 +15,6 @@ export function execPromise(command, options) {
     })
 }
 
-export async function runSynbict(inputFile, outputFile, featureLibraries) {
-    // construct SYNBICT command
-    const synbictCommand = "python ./SYNBICT/sequences_to_features/sequences_to_features.py -n http://example.org -m 1000 -M 6 -ni -p " +
-        `-t ${inputFile} ` +
-        `-o ${outputFile} ` +
-        `-f ${featureLibraries.join(" ")} `
-
-    // execute SYNBICT command
-    await execPromise(synbictCommand)
-}
 
 export async function findNewAnnotations(originalContent, annotatedContent) {
     // create and load original doc
@@ -51,8 +41,52 @@ export async function findNewAnnotations(originalContent, annotatedContent) {
         }))
 }
 
-export async function renderFrontend() {
-    const template = await fs.readFile("./dist/client/client/index.html", "utf8")
-    const { render } = await import("../dist/server/ssrEntry.js")
-    return template.replace("<!--ssr-outlet-->", await render())
+
+export async function pullFreeText(sbolContent) {
+    // create and load original doc
+    const doc = new SBOL2GraphView(new Graph())
+    await doc.loadString(sbolContent)
+
+    // grab free text elements and flatten them into an array
+    return doc.rootComponentDefinitions
+        .map(cd => [cd.description])
+        .flat()
+}
+
+export async function getSequence(sbolContent) {
+    // create and load original doc
+    const doc = new SBOL2GraphView(new Graph())
+    await doc.loadString(sbolContent)
+
+    return doc.rootComponentDefinitions[0]?.sequences[0]?.elements
+}
+
+function fillTemplate(template, renderedOutput, context) {
+    return template.replace("<!--ssr-outlet-->", renderedOutput)
+        + `<script>window.__CONTEXT__ = ${JSON.stringify(context)}</script>`
+}
+
+export async function renderFrontend(url, context = {}) {
+
+    // PRODUCTION
+    // run from built files
+    if (isProduction()) {
+        const template = await fs.readFile("./dist/client/client/index.html", "utf8")
+        const { render } = await import("../dist/server/ssrEntry.js")
+        return fillTemplate(template, await render(url, context), context)
+    }
+
+    // DEVELOPMENT
+    // run from dev server
+    const { viteDevServer } = await import("./modules/devServer.js")
+    const template = await viteDevServer.transformIndexHtml(
+        url,
+        await fs.readFile("./client/index.html", "utf8")
+    )
+    const { render } = await viteDevServer.ssrLoadModule("./server/ssrEntry.jsx")
+    return fillTemplate(template, await render(url, context), context)
+}
+
+export function isProduction() {
+    return process.env.NODE_ENV === 'production'
 }
