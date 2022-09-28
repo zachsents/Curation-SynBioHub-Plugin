@@ -87,7 +87,8 @@ export default function run(app) {
             sequence: sequence,
             sequenceAnnotations: synbictAnnotations,
             freeText: biobertResult.text,
-            textAnnotations: biobertResult.annotations,
+            // only accept biobert annotations that are >85% confident
+            textAnnotations: biobertResult.annotations.filter(anno => anno.prob > 0.85),
         }
 
         // respond

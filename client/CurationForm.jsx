@@ -68,7 +68,7 @@ export default function CurationForm({ }) {
                             />
                         )}
                     </FormSection>
-                    <FormSection title="Suggested Keywords" w={300}>
+                    <FormSection title="Recognized Terms" w={300}>
                         {textAnnotations.map((anno, i) =>
                             <AnnotationCheckbox
                                 name={anno.mention}
