@@ -1,4 +1,4 @@
-import { Box, Highlight, ScrollArea, Text, useMantineTheme } from '@mantine/core'
+import { Box, ScrollArea, Text, useMantineTheme } from '@mantine/core'
 import React from 'react'
 
 export default function Sequence({ sequence, subSequences, onChange }) {
@@ -10,25 +10,18 @@ export default function Sequence({ sequence, subSequences, onChange }) {
     const highlightOverlays = subSequences.map(({ start, end, color, active, id }) => {
         const before = sequence.slice(0, start - 1).match(/.{1,8}/g)
         let during = sequence.slice(start - 1, end)
-        // let after = sequence.slice(end)
 
         const duringOffset = 8 - before[before.length - 1].length
         during = [
             during.slice(0, duringOffset),
             ...during.slice(duringOffset).match(/.{1,8}/g)
         ]
-        // const afterOffset = 8 - during[during.length - 1].length
-        // after = [
-        //     after.slice(0, afterOffset),
-        //     ...after.slice(afterOffset).match(/.{1,8}/g)
-        // ]
 
         const highlightColor = theme.colors[color]?.[active ? 3 : 1] ?? "transparent"
 
         return <Box
             sx={{
                 color: "transparent",
-                // color: "rgba(255, 0, 0, 0.5)",
                 position: "absolute",
                 top: 0,
                 zIndex: active ? 6 : 5,
@@ -43,7 +36,6 @@ export default function Sequence({ sequence, subSequences, onChange }) {
         >
             {before.map((seq, i, arr) => <BasePairGroup seq={seq} key={seq + i} lastChild={i == arr.length - 1} />)}
             {during.map((seq, i, arr) => <BasePairGroup seq={seq} key={seq + i} lastChild={i == arr.length - 1} highlight={highlightColor} onClick={() => onChange?.(id, !active)} />)}
-            {/* {after.map((seq, i, arr) => <BasePairGroup seq={seq} key={seq + i} lastChild={i == arr.length - 1} />)} */}
         </Box>
     })
 

@@ -82,18 +82,25 @@ export default function run(app) {
 
         const sequence = await getSequence(completeSbolContent)
 
+        // create context to pass to client app
         const clientContext = {
             sequence: sequence,
             sequenceAnnotations: synbictAnnotations,
+            freeText: biobertResult.text,
+            textAnnotations: biobertResult.annotations,
         }
 
+        // respond
         res.status(200).send({
             needs_interface: true,
             own_interface: true,
             interface: isProduction() ?
                 await renderFrontend(req.originalUrl, clientContext) :
                 generateLink(clientContext),
+
+            // not necessary to include, but useful for debugging
             sequenceAnnotations: synbictAnnotations,
+            textAnnotations: biobertResult,
         })
     })
 }

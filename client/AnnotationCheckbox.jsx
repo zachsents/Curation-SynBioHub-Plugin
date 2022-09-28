@@ -1,6 +1,6 @@
 import { Checkbox } from '@mantine/core'
 
-export default function SequenceAnnotation({ name, active, onChange, color }) {
+export default function AnnotationCheckbox({ name, active, onChange, color }) {
 
     return (
         <Checkbox
