@@ -17,3 +17,23 @@ export function useRandomColor(level) {
 
     return color
 }
+
+export function useCyclicalColors(amount, level) {
+    const theme = useMantineTheme()
+    const result = []
+
+    let index = 0
+    while(result.length < amount) {
+        const colorName = colorCycle[index++]
+        result.push(
+            level == null ?
+                colorName : 
+                theme.colors[colorName][level]
+        )
+        index >= colorCycle.length && (index = 0)
+    }
+    
+    return result
+}
+
+const colorCycle = ["pink", "yellow", "teal", "indigo", "red", "lime", "cyan", "violet", "orange", "green", "blue", "grape" ]

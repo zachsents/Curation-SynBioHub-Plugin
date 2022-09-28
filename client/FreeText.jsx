@@ -20,14 +20,18 @@ export default function FreeText({ children, terms, onChange }) {
     ), [JSON.stringify(terms)])
 
     const clickHandler = event => {
-        const marks = [...event.target.parentNode.children].filter(el => el.tagName == "MARK")
-        const term = terms[marks.indexOf(event.target)]
-        term && onChange(term.text, !term.active)
+        if(event.target.tagName != "MARK")
+            return 
+
+        const term = terms.find(t => t.text == event.target.innerHTML)
+        term && onChange(term.id, !term.active)
     }
+
+    console.log(terms)
 
     return (
         <Highlight
-            highlight={terms.map(t => t.text)}
+            highlight={[]}
             highlightStyles={highlightStyles}
             sx={highlightContainerStyle}
             onClick={clickHandler}

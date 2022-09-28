@@ -75,8 +75,8 @@ export default function run(app) {
         console.log(chalk.gray("Running BioBert BERN2..."))
 
         // do biobert annotation on free text
-        const freeText = await pullFreeText(completeSbolContent)
-        const biobertResult = await runBiobert(freeText.join(" "))
+        const freeText = (await pullFreeText(completeSbolContent)).join(" ")
+        const biobertResult = await runBiobert(freeText)
 
         console.log(chalk.gray("BioBert BERN2 has completed."))
 
@@ -86,9 +86,9 @@ export default function run(app) {
         const clientContext = {
             sequence: sequence,
             sequenceAnnotations: synbictAnnotations,
-            freeText: biobertResult.text,
+            freeText,
             // only accept biobert annotations that are >85% confident
-            textAnnotations: biobertResult.annotations.filter(anno => anno.prob > 0.85),
+            textAnnotations: biobertResult,
         }
 
         // respond

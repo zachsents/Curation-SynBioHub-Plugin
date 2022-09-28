@@ -3,10 +3,11 @@ import { useSetState } from '@mantine/hooks'
 import React from 'react'
 import { useAppContext } from './context'
 import FormSection from './FormSection'
-import { useRandomColor } from './hooks'
+import { useCyclicalColors, useRandomColor } from './hooks'
 import Sequence from './Sequence'
 import AnnotationCheckbox from './AnnotationCheckbox'
 import FreeText from "./FreeText"
+import TextHighlighter from './TextHighlighter'
 
 export default function CurationForm({ }) {
 
@@ -20,11 +21,11 @@ export default function CurationForm({ }) {
 
     // manage sequence annotations
     const [activeSequenceAnnotations, setActiveSequenceAnnotations] = useSetState({})
-    const sequenceAnnotationColors = sequenceAnnotations.map(() => useRandomColor())
+    const sequenceAnnotationColors = useCyclicalColors(sequenceAnnotations.length)
 
     // manage text annotations
     const [activeTextAnnotations, setActiveTextAnnotations] = useSetState({})
-    const textAnnotationColors = textAnnotations.map(() => useRandomColor())
+    const textAnnotationColors = useCyclicalColors(textAnnotations.length)
 
     return (
         <Container>
@@ -44,23 +45,29 @@ export default function CurationForm({ }) {
                         />
                     </FormSection>
                     <FormSection title="Description">
-                        <FreeText
-                            terms={textAnnotations.map((anno, i) => ({
-                                text: anno.mention,
-                                color: textAnnotationColors[i],
-                                active: activeTextAnnotations[anno.mention] ?? false,
-                            }))}
+                        <TextHighlighter
+                            terms={textAnnotations.map((anno, i) =>
+                                anno.mentions.map(mention => ({
+                                    id: anno.id,
+                                    // text: mention.text,
+                                    start: mention.start,
+                                    end: mention.end,
+                                    color: textAnnotationColors[i],
+                                    active: activeTextAnnotations[anno.id] ?? false,
+                                }))
+                            ).flat()}
                             onChange={(id, val) => setActiveTextAnnotations({ [id]: val })}
+                            h={200}
                         >
                             {freeText}
-                        </FreeText>
+                        </TextHighlighter>
                     </FormSection>
                 </Box>
                 <Box>
                     <FormSection title="Sequence Annotations" w={300}>
                         {sequenceAnnotations.map((anno, i) =>
                             <AnnotationCheckbox
-                                name={anno.name}
+                                title={anno.name}
                                 color={sequenceAnnotationColors[i]}
                                 active={activeSequenceAnnotations[anno.pid] ?? false}
                                 onChange={val => setActiveSequenceAnnotations({ [anno.pid]: val })}
@@ -71,11 +78,13 @@ export default function CurationForm({ }) {
                     <FormSection title="Recognized Terms" w={300}>
                         {textAnnotations.map((anno, i) =>
                             <AnnotationCheckbox
-                                name={anno.mention}
+                                title={anno.mentions[0].text}
+                                subtitle={anno.id}
+                                subtitleLink={anno.idLink}
                                 color={textAnnotationColors[i]}
-                                active={activeTextAnnotations[anno.mention] ?? false}
-                                onChange={val => setActiveTextAnnotations({ [anno.mention]: val })}
-                                key={anno.mention}
+                                active={activeTextAnnotations[anno.id] ?? false}
+                                onChange={val => setActiveTextAnnotations({ [anno.id]: val })}
+                                key={anno.id}
                             />
                         )}
                     </FormSection>
