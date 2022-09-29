@@ -38,7 +38,15 @@ export default function run(app) {
         console.log(chalk.gray("Working in ") + chalk.yellow(tempDir))
 
         // load SBOL content from one-time URL & write to file for SYNBICT
-        const completeSbolContent = await (await fetch(complete_sbol)).text()
+        try {
+            var completeSbolContent = await (await fetch(complete_sbol)).text()
+        }
+        catch (e) {
+            const message = "Failed to fetch complete SBOL:\n" + complete_sbol
+            console.log(chalk.red(message))
+            res.status(500).send({ message, fullError: e })
+            return
+        }
         await fs.writeFile(originalFile, completeSbolContent)
 
         console.log(chalk.gray("Downloaded SBOL file."))
