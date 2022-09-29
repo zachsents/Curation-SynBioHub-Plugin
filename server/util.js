@@ -1,3 +1,4 @@
+import chalk from "chalk"
 import { exec } from "child_process"
 import fs from "fs/promises"
 import { Graph, SBOL2GraphView } from "sbolgraph"
@@ -89,4 +90,9 @@ export async function renderFrontend(url, context = {}) {
 
 export function isProduction() {
     return process.env.NODE_ENV === 'production'
+}
+
+export function throwError(res, error, message) {
+    console.log(chalk.red(message))
+    res.status(500).send({ message, fullError: { message: error.message, ...error } })
 }

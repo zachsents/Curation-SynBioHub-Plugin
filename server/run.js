@@ -1,4 +1,4 @@
-import { findNewAnnotations, getSequence, isProduction, pullFreeText, renderFrontend } from "./util.js"
+import { findNewAnnotations, getSequence, isProduction, pullFreeText, renderFrontend, throwError } from "./util.js"
 import fetch from "node-fetch"
 import fs from "fs/promises"
 import path from "path"
@@ -39,12 +39,13 @@ export default function run(app) {
 
         // load SBOL content from one-time URL & write to file for SYNBICT
         try {
-            var completeSbolContent = await (await fetch(complete_sbol)).text()
+            const res = await fetch(complete_sbol)
+            if(res.status >= 400)
+                throw new Error(`Received status ${res.status} while fetching complete SBOL.`)
+            var completeSbolContent = await res.text()
         }
         catch (e) {
-            const message = "Failed to fetch complete SBOL:\n" + complete_sbol
-            console.log(chalk.red(message))
-            res.status(500).send({ message, fullError: e })
+            throwError(res, e, "Failed to fetch complete SBOL:\n" + complete_sbol)
             return
         }
         await fs.writeFile(originalFile, completeSbolContent)
