@@ -32,9 +32,8 @@ export default function CurationForm({ }) {
             <Group sx={{ alignItems: "flex-start" }}>
                 <Box sx={{ flexGrow: 1, flexBasis: 0, }}>
                     <FormSection title="Sequence">
-                        <Sequence
-                            sequence={sequence}
-                            subSequences={sequenceAnnotations.map((anno, i) => ({
+                        <TextHighlighter
+                            terms={sequenceAnnotations.map((anno, i) => ({
                                 id: anno.pid,
                                 start: anno.location[0],
                                 end: anno.location[1],
@@ -42,7 +41,17 @@ export default function CurationForm({ }) {
                                 active: activeSequenceAnnotations[anno.pid] ?? false,
                             }))}
                             onChange={(id, val) => setActiveSequenceAnnotations({ [id]: val })}
-                        />
+                            h={500}
+                            offsetStart={-1}
+                            wordMode={8}
+                            textStyle={{
+                                fontFamily: "monospace",
+                                fontSize: 16,
+                                letterSpacing: 0.2,
+                            }}
+                        >
+                            {sequence.toLowerCase()}
+                        </TextHighlighter>
                     </FormSection>
                     <FormSection title="Description">
                         <TextHighlighter
