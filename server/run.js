@@ -78,7 +78,7 @@ export default function run(app) {
             await fs.readFile(annotatedFile, "utf8")
         )
 
-        console.log(chalk.gray("Created ") + chalk.green(synbictAnnotations.length) + chalk.gray(" annotations:"))
+        console.log(chalk.gray("Found ") + chalk.green(synbictAnnotations.length) + chalk.gray(" potential annotations:"))
         console.log(chalk.green(synbictAnnotations.map(a => a.name).join(", ")))
 
         console.log(chalk.gray("Running BioBert BERN2..."))
@@ -88,6 +88,8 @@ export default function run(app) {
         const biobertResult = await runBiobert(freeText)
 
         console.log(chalk.gray("BioBert BERN2 has completed."))
+        console.log(chalk.gray("Found ") + chalk.green(biobertResult.length) + chalk.gray(" potential annotations:"))
+        console.log(chalk.green(biobertResult.map(a => a.mentions[0].text).join(", ")))
 
         const sequence = await getSequence(completeSbolContent)
 
