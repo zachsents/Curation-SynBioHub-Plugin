@@ -3,11 +3,13 @@ import { useSetState } from '@mantine/hooks'
 import React from 'react'
 import { useAppContext } from './context'
 import FormSection from './FormSection'
-import { useCyclicalColors, useRandomColor } from './hooks'
+import { useCyclicalColors } from './hooks/hooks'
 import Sequence from './Sequence'
 import AnnotationCheckbox from './AnnotationCheckbox'
 import FreeText from "./FreeText"
 import TextHighlighter from './TextHighlighter'
+import useSequenceAnnotations from './hooks/useSequenceAnnotations'
+import useTextAnnotations from './hooks/useTextAnnotations'
 
 export default function CurationForm({ }) {
 
@@ -19,84 +21,19 @@ export default function CurationForm({ }) {
         textAnnotations,
     } = useAppContext()
 
-    // manage sequence annotations
-    const [activeSequenceAnnotations, setActiveSequenceAnnotations] = useSetState({})
-    const sequenceAnnotationColors = useCyclicalColors(sequenceAnnotations.length)
-
-    // manage text annotations
-    const [activeTextAnnotations, setActiveTextAnnotations] = useSetState({})
-    const textAnnotationColors = useCyclicalColors(textAnnotations.length)
+    const [sequenceComponent, sequenceAnnotationsComponent] = useSequenceAnnotations(sequence, sequenceAnnotations)
+    const [textComponent, textAnnotationsComponent] = useTextAnnotations(freeText, textAnnotations)
 
     return (
         <Container>
             <Group sx={{ alignItems: "flex-start" }}>
                 <Box sx={{ flexGrow: 1, flexBasis: 0, }}>
-                    <FormSection title="Sequence">
-                        <TextHighlighter
-                            terms={sequenceAnnotations.map((anno, i) => ({
-                                id: anno.pid,
-                                start: anno.location[0],
-                                end: anno.location[1],
-                                color: sequenceAnnotationColors[i],
-                                active: activeSequenceAnnotations[anno.pid] ?? false,
-                            }))}
-                            onChange={(id, val) => setActiveSequenceAnnotations({ [id]: val })}
-                            h={500}
-                            offsetStart={-1}
-                            wordMode={8}
-                            textStyle={{
-                                fontFamily: "monospace",
-                                fontSize: 16,
-                                letterSpacing: 0.2,
-                            }}
-                        >
-                            {sequence.toLowerCase()}
-                        </TextHighlighter>
-                    </FormSection>
-                    <FormSection title="Description">
-                        <TextHighlighter
-                            terms={textAnnotations.map((anno, i) =>
-                                anno.mentions.map(mention => ({
-                                    id: anno.id,
-                                    // text: mention.text,
-                                    start: mention.start,
-                                    end: mention.end,
-                                    color: textAnnotationColors[i],
-                                    active: activeTextAnnotations[anno.id] ?? false,
-                                }))
-                            ).flat()}
-                            onChange={(id, val) => setActiveTextAnnotations({ [id]: val })}
-                            h={200}
-                        >
-                            {freeText}
-                        </TextHighlighter>
-                    </FormSection>
+                    {sequenceComponent}
+                    {textComponent}
                 </Box>
                 <Box>
-                    <FormSection title="Sequence Annotations" w={300}>
-                        {sequenceAnnotations.map((anno, i) =>
-                            <AnnotationCheckbox
-                                title={anno.name}
-                                color={sequenceAnnotationColors[i]}
-                                active={activeSequenceAnnotations[anno.pid] ?? false}
-                                onChange={val => setActiveSequenceAnnotations({ [anno.pid]: val })}
-                                key={anno.name}
-                            />
-                        )}
-                    </FormSection>
-                    <FormSection title="Recognized Terms" w={300}>
-                        {textAnnotations.map((anno, i) =>
-                            <AnnotationCheckbox
-                                title={anno.mentions[0].text}
-                                subtitle={anno.id}
-                                subtitleLink={anno.idLink}
-                                color={textAnnotationColors[i]}
-                                active={activeTextAnnotations[anno.id] ?? false}
-                                onChange={val => setActiveTextAnnotations({ [anno.id]: val })}
-                                key={anno.id}
-                            />
-                        )}
-                    </FormSection>
+                    {sequenceAnnotationsComponent}
+                    {textAnnotationsComponent}
                 </Box>
             </Group>
         </Container>
