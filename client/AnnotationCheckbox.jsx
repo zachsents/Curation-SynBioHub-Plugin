@@ -1,9 +1,10 @@
-import { Checkbox, Text, Group, Anchor } from '@mantine/core'
+import { Checkbox, Text, Group } from '@mantine/core'
+import TextLink from "./TextLink"
 
 export default function AnnotationCheckbox({ title, subtitle, subtitleLink, active, onChange, color }) {
 
     const subtitleComponent = subtitle && subtitleLink ?
-        <Text color="gray"><a target="_blank" style={{ color: "inherit" }} href={subtitleLink}>{subtitle}</a></Text> :
+        <TextLink color="gray" href={subtitleLink}>{subtitle}</TextLink> :
         <Text color="gray">{subtitle}</Text>
 
     return (

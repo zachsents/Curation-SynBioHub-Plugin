@@ -1,4 +1,4 @@
-import { Container, Group, Box } from '@mantine/core'
+import { Container, Group, Box, ScrollArea } from '@mantine/core'
 import { useSetState } from '@mantine/hooks'
 import React from 'react'
 import { useAppContext } from './context'
@@ -10,6 +10,8 @@ import FreeText from "./FreeText"
 import TextHighlighter from './TextHighlighter'
 import useSequenceAnnotations from './hooks/useSequenceAnnotations'
 import useTextAnnotations from './hooks/useTextAnnotations'
+import TextLink from './TextLink'
+import SimilarParts from './SimilarParts'
 
 export default function CurationForm({ }) {
 
@@ -32,6 +34,7 @@ export default function CurationForm({ }) {
                     {textComponent}
                 </Box>
                 <Box>
+                    <SimilarParts />
                     {sequenceAnnotationsComponent}
                     {textAnnotationsComponent}
                 </Box>

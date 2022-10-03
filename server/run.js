@@ -7,6 +7,7 @@ import chalk from "chalk"
 import { runSynbict } from "./modules/synbict.js"
 import { runBiobert } from "./modules/biobert.js"
 import { generateLink } from "./modules/devServer.js"
+import { findSimilarParts } from "./modules/similar.js"
 
 // need this for windows
 process.env.ComSpec = "powershell"
@@ -82,24 +83,30 @@ export default function run(app) {
         console.log(chalk.green(synbictAnnotations.map(a => a.name).join(", ")))
 
         console.log(chalk.gray("Running BioBert BERN2..."))
-
+        
         // do biobert annotation on free text
         const freeText = (await pullFreeText(completeSbolContent)).join(" ")
         const biobertResult = await runBiobert(freeText)
-
+        
         console.log(chalk.gray("BioBert BERN2 has completed."))
         console.log(chalk.gray("Found ") + chalk.green(biobertResult.length) + chalk.gray(" potential annotations:"))
         console.log(chalk.green(biobertResult.map(a => a.mentions[0].text).join(", ")))
-
+        
         const sequence = await getSequence(completeSbolContent)
+        
+        // find similar parts
+        console.log(chalk.gray("Finding similar parts..."))
+        const similarParts = await findSimilarParts(top_level)
+        console.log(chalk.gray("Found ") + chalk.green(similarParts.length) + chalk.gray(" similar parts:"))
+        console.log(chalk.green(similarParts.map(part => part.name).join(", ")))
 
         // create context to pass to client app
         const clientContext = {
             sequence: sequence,
             sequenceAnnotations: synbictAnnotations,
             freeText,
-            // only accept biobert annotations that are >85% confident
             textAnnotations: biobertResult,
+            similarParts,
         }
 
         // respond
@@ -113,6 +120,7 @@ export default function run(app) {
             // not necessary to include, but useful for debugging
             sequenceAnnotations: synbictAnnotations,
             textAnnotations: biobertResult,
+            similarParts,
         })
     })
 }
