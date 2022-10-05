@@ -48,6 +48,7 @@ export default function createStore(context) {
     useTextStore = create((set, get) => ({
         description: context?.freeText,
         annotations: context?.textAnnotations,
+        setDescription: description => set(() => ({ description })),
         ...annotationActions(set, get),
     }))
 }
