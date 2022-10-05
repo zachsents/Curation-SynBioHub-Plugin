@@ -1,22 +1,6 @@
-import { Checkbox, Text, Group, Tooltip, Box } from '@mantine/core'
-import { useEffect } from 'react'
-import { useState } from 'react'
-import EditableText from './EditableText'
-import TextLink from "./TextLink"
+import { Checkbox, Text, Group, Box } from '@mantine/core'
 
-export default function AnnotationCheckbox({ title, identifier, identifierUri, editable, onEdit, active, onChange, color }) {
-
-    // create component for identifier; could be a link with a tooltip or just text
-    const identifierComponent = identifier && identifierUri ?
-        <Tooltip
-            label={identifierUri}
-            position="bottom"
-            withArrow
-        >
-            <Box><TextLink color="gray" href={identifierUri}>{identifier}</TextLink></Box>
-
-        </Tooltip> :
-        <Text color="gray">{identifier}</Text>
+export default function AnnotationCheckbox({ title, subtitle, active, onChange, color }) {
 
     return (
         <Checkbox
@@ -24,16 +8,7 @@ export default function AnnotationCheckbox({ title, identifier, identifierUri, e
             label={
                 <Group spacing="xs">
                     <Text color={color} weight={600}>{title}</Text>
-                    {editable ?
-                        <EditableText
-                            values={{ id: identifier, idLink: identifierUri }}
-                            labels={{ id: "Identifier", idLink: "URI" }}
-                            onChange={editedValues => onEdit?.(editedValues)}
-                            modalTitle="Edit Annotation"
-                        >
-                            {identifierComponent}
-                        </EditableText> :
-                        identifierComponent}
+                    <Box sx={{ flexGrow: 1 }} >{subtitle}</Box>
                 </Group>
             }
             color={color}

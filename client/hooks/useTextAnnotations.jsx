@@ -1,6 +1,7 @@
-import { useSetState } from "@mantine/hooks"
+import AddTextAnnotation from "../components/AddTextAnnotation"
 import AnnotationCheckbox from "../components/AnnotationCheckbox"
 import FormSection from "../components/FormSection"
+import TextAnnotationCheckbox from "../components/TextAnnotationCheckbox"
 import TextHighlighter from "../components/TextHighlighter"
 import { useTextStore } from "../store"
 import { useCyclicalColors } from "./hooks"
@@ -8,7 +9,14 @@ import { useCyclicalColors } from "./hooks"
 
 export default function useTextAnnotations() {
 
-    const { description, annotations, isAnnotationActive, selectAnnotation, deselectAnnotation, editAnnotation } = useTextStore()
+    const {
+        description,
+        annotations,
+        isAnnotationActive,
+        selectAnnotation,
+        deselectAnnotation,
+        editAnnotation,
+    } = useTextStore()
 
     // create a set of contrasty colors
     const colors = useCyclicalColors(annotations.length)
@@ -17,13 +25,21 @@ export default function useTextAnnotations() {
         <FormSection title="Description">
             <TextHighlighter
                 terms={annotations.map((anno, i) =>
-                    anno.mentions.map(mention => ({
-                        id: anno.id,
-                        start: mention.start,
-                        end: mention.end,
-                        color: colors[i],
-                        active: isAnnotationActive(anno.id) ?? false,
-                    }))
+                    anno.terms.map(termText => {
+                        const foundMentions = []
+                        const reg = new RegExp(termText, "gi")
+                        let occurence
+                        while (occurence = reg.exec(description)) {
+                            foundMentions.push({
+                                id: anno.id,
+                                color: colors[i],
+                                active: isAnnotationActive(anno.id) ?? false,
+                                start: occurence.index,
+                                end: occurence.index + termText.length,
+                            })
+                        }
+                        return foundMentions
+                    }).flat()
                 ).flat()}
                 onChange={(id, val) => val ? selectAnnotation(id) : deselectAnnotation(id)}
                 h={200}
@@ -34,18 +50,10 @@ export default function useTextAnnotations() {
 
         <FormSection title="Recognized Terms" w={350}>
             {annotations.map((anno, i) =>
-                <AnnotationCheckbox
-                    title={anno.mentions[0].text}
-                    identifier={anno.id}
-                    identifierUri={anno.idLink}
-                    editable={true}
-                    onEdit={newValues => editAnnotation(anno.id, newValues)}
-                    color={colors[i]}
-                    active={isAnnotationActive(anno.id) ?? false}
-                    onChange={val => val ? selectAnnotation(anno.id) : deselectAnnotation(anno.id)}
-                    key={anno.id}
-                />
+                <TextAnnotationCheckbox id={anno.id} color={colors[i]} key={anno.id} />
             )}
+
+            <AddTextAnnotation />
         </FormSection>
     ]
 }

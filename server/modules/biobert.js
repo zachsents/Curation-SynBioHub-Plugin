@@ -81,7 +81,12 @@ export async function runBiobert(text) {
         annotations.find(anno => anno.id == searchIndex[topResult.item]).mentions.push(word)
     })
 
-    return annotations
+    // for the sake of simplicity, we're gonna cut out the start and end
+    // properties of each mention and calculate them dynamically
+    return annotations.map(anno => ({
+        ...anno,
+        terms: [...new Set(anno.mentions.map(mention => mention.text))]
+    }))
 }
 
 function findOntologyLink(id) {

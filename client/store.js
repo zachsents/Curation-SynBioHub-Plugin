@@ -21,6 +21,9 @@ const annotationActions = (set, get) => ({
     addAnnotation: newAnno => set(state => ({
         annotations: [...state.annotations, newAnno]
     })),
+    removeAnnotation: id => set(state => ({
+        annotations: state.annotations.filter(anno => anno.id != id)
+    })),
     selectAnnotation: id => get().editAnnotation(id, { active: true }),
     deselectAnnotation: id => get().editAnnotation(id, { active: false }),
     getAnnotation: id => get().annotations.find(anno => anno.id == id),
