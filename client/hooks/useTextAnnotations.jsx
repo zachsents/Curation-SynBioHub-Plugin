@@ -1,44 +1,48 @@
 import { useSetState } from "@mantine/hooks"
-import AnnotationCheckbox from "../AnnotationCheckbox"
-import FormSection from "../FormSection"
-import TextHighlighter from "../TextHighlighter"
+import AnnotationCheckbox from "../components/AnnotationCheckbox"
+import FormSection from "../components/FormSection"
+import TextHighlighter from "../components/TextHighlighter"
+import { useTextStore } from "../store"
 import { useCyclicalColors } from "./hooks"
 
 
-export default function useTextAnnotations(text, textAnnotations) {
+export default function useTextAnnotations() {
 
-    // manage text annotations
-    const [active, setActive] = useSetState({})
-    const colors = useCyclicalColors(textAnnotations.length)
+    const { description, annotations, isAnnotationActive, selectAnnotation, deselectAnnotation, editAnnotation } = useTextStore()
+
+    // create a set of contrasty colors
+    const colors = useCyclicalColors(annotations.length)
 
     return [
         <FormSection title="Description">
             <TextHighlighter
-                terms={textAnnotations.map((anno, i) =>
+                terms={annotations.map((anno, i) =>
                     anno.mentions.map(mention => ({
                         id: anno.id,
                         start: mention.start,
                         end: mention.end,
                         color: colors[i],
-                        active: active[anno.id] ?? false,
+                        active: isAnnotationActive(anno.id) ?? false,
                     }))
                 ).flat()}
-                onChange={(id, val) => setActive({ [id]: val })}
+                onChange={(id, val) => val ? selectAnnotation(id) : deselectAnnotation(id)}
                 h={200}
             >
-                {text}
+                {description}
             </TextHighlighter>
         </FormSection>,
 
-        <FormSection title="Recognized Terms" w={300}>
-            {textAnnotations.map((anno, i) =>
+        <FormSection title="Recognized Terms" w={350}>
+            {annotations.map((anno, i) =>
                 <AnnotationCheckbox
                     title={anno.mentions[0].text}
-                    subtitle={anno.id}
-                    subtitleLink={anno.idLink}
+                    identifier={anno.id}
+                    identifierUri={anno.idLink}
+                    editable={true}
+                    onEdit={newValues => editAnnotation(anno.id, newValues)}
                     color={colors[i]}
-                    active={active[anno.id] ?? false}
-                    onChange={val => setActive({ [anno.id]: val })}
+                    active={isAnnotationActive(anno.id) ?? false}
+                    onChange={val => val ? selectAnnotation(anno.id) : deselectAnnotation(anno.id)}
                     key={anno.id}
                 />
             )}

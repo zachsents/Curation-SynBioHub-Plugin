@@ -1,6 +1,6 @@
 import { Box, ScrollArea, Text, useMantineTheme } from '@mantine/core'
 import React from 'react'
-import { getColor } from './util'
+import { getColor } from '../util'
 
 export default function TextHighlighter({ children, h, terms, onChange, offsetStart = 0, textStyle = {}, wordMode }) {
 

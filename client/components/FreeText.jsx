@@ -1,7 +1,7 @@
 import { Highlight } from '@mantine/core'
 import React from 'react'
 import { useCallback } from 'react'
-import { getColor } from './util'
+import { getColor } from '../util'
 
 export default function FreeText({ children, terms, onChange }) {
 

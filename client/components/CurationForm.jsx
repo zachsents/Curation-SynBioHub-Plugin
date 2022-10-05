@@ -1,30 +1,13 @@
-import { Container, Group, Box, ScrollArea } from '@mantine/core'
-import { useSetState } from '@mantine/hooks'
-import React from 'react'
-import { useAppContext } from './context'
-import FormSection from './FormSection'
-import { useCyclicalColors } from './hooks/hooks'
-import Sequence from './Sequence'
-import AnnotationCheckbox from './AnnotationCheckbox'
-import FreeText from "./FreeText"
-import TextHighlighter from './TextHighlighter'
-import useSequenceAnnotations from './hooks/useSequenceAnnotations'
-import useTextAnnotations from './hooks/useTextAnnotations'
-import TextLink from './TextLink'
+import { Container, Group, Box } from '@mantine/core'
+import useSequenceAnnotations from '../hooks/useSequenceAnnotations'
+import useTextAnnotations from '../hooks/useTextAnnotations'
 import SimilarParts from './SimilarParts'
+
 
 export default function CurationForm({ }) {
 
-    // info from SSR context
-    const {
-        sequence,
-        sequenceAnnotations,
-        freeText,
-        textAnnotations,
-    } = useAppContext()
-
-    const [sequenceComponent, sequenceAnnotationsComponent] = useSequenceAnnotations(sequence, sequenceAnnotations)
-    const [textComponent, textAnnotationsComponent] = useTextAnnotations(freeText, textAnnotations)
+    const [sequenceComponent, sequenceAnnotationsComponent] = useSequenceAnnotations()
+    const [textComponent, textAnnotationsComponent] = useTextAnnotations()
 
     return (
         <Container>
@@ -48,7 +31,7 @@ const exampleSequence = "ACTTTTCATACTCCCGCCAcaggtggcacttttcggggaaatgtgcgcggaaccc
 const exampleAnnotations = [
     {
         "name": "AmpR terminator",
-        "pid": "https://synbiohub.org/user/zachsents/curationtest/Test_Part/AmpR_u32_terminator_anno_1",
+        "id": "https://synbiohub.org/user/zachsents/curationtest/Test_Part/AmpR_u32_terminator_anno_1",
         "location": [
             20,
             150
@@ -56,7 +39,7 @@ const exampleAnnotations = [
     },
     {
         "name": "pRPL18B",
-        "pid": "https://synbiohub.org/user/zachsents/curationtest/Test_Part/pRPL18B_anno_1",
+        "id": "https://synbiohub.org/user/zachsents/curationtest/Test_Part/pRPL18B_anno_1",
         "location": [
             1578,
             2283

@@ -1,26 +1,27 @@
-import { useSetState } from "@mantine/hooks"
-import AnnotationCheckbox from "../AnnotationCheckbox"
-import FormSection from "../FormSection"
-import TextHighlighter from "../TextHighlighter"
+import AnnotationCheckbox from "../components/AnnotationCheckbox"
+import FormSection from "../components/FormSection"
+import TextHighlighter from "../components/TextHighlighter"
+import { useSequenceStore } from "../store"
 import { useCyclicalColors } from "./hooks"
 
-export default function useSequenceAnnotations(sequence, sequenceAnnotations) {
+export default function useSequenceAnnotations() {
 
-    // manage sequence annotations
-    const [active, setActive] = useSetState({})
-    const colors = useCyclicalColors(sequenceAnnotations.length)
+    const { sequence, annotations, isAnnotationActive, selectAnnotation, deselectAnnotation } = useSequenceStore()
+
+    // create a set of contrasty colors
+    const colors = useCyclicalColors(annotations.length)
 
     return [
         <FormSection title="Sequence">
             <TextHighlighter
-                terms={sequenceAnnotations.map((anno, i) => ({
-                    id: anno.pid,
+                terms={annotations.map((anno, i) => ({
+                    id: anno.id,
                     start: anno.location[0],
                     end: anno.location[1],
                     color: colors[i],
-                    active: active[anno.pid] ?? false,
+                    active: isAnnotationActive(anno.id) ?? false,
                 }))}
-                onChange={(id, val) => setActive({ [id]: val })}
+                onChange={(id, val) => val ? selectAnnotation(id) : deselectAnnotation(id)}
                 h={500}
                 offsetStart={-1}
                 wordMode={8}
@@ -34,13 +35,13 @@ export default function useSequenceAnnotations(sequence, sequenceAnnotations) {
             </TextHighlighter>
         </FormSection>,
 
-        <FormSection title="Sequence Annotations" w={300}>
-            {sequenceAnnotations.map((anno, i) =>
+        <FormSection title="Sequence Annotations" w={350}>
+            {annotations.map((anno, i) =>
                 <AnnotationCheckbox
                     title={anno.name}
                     color={colors[i]}
-                    active={active[anno.pid] ?? false}
-                    onChange={val => setActive({ [anno.pid]: val })}
+                    active={isAnnotationActive(anno.id) ?? false}
+                    onChange={val => val ? selectAnnotation(anno.id) : deselectAnnotation(anno.id)}
                     key={anno.name}
                 />
             )}
