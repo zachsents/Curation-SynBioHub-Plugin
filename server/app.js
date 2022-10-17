@@ -27,6 +27,9 @@ else
 // serve static files for frontend
 app.use(express.static("dist/client"))
 
+// serve static files for ontologies
+app.use(express.static('public'))
+
 // GET  /status
 status(app)
 // POST /evaluate

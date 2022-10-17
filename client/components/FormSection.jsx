@@ -12,7 +12,7 @@ export default function FormSection({ title, rightSection, titleOutside = false,
             flexBasis: grow ? 0 : "auto",
         }} mb={20}>
             {titleOutside && titleComponent}
-            <Card p="sm" radius="md" withBorder={true}>
+            <Card p="sm" radius="md" withBorder={true} sx={{ overflow: "visible" }}>
                 {!titleOutside && <Card.Section withBorder inheritPadding py="sm" mb={10}>
                     <Group position="apart">
                         {titleComponent}

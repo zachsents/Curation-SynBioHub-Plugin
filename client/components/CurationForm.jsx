@@ -2,6 +2,7 @@ import { Container, Group, Box } from '@mantine/core'
 import useSequenceAnnotations from '../hooks/useSequenceAnnotations'
 import useTextAnnotations from '../hooks/useTextAnnotations'
 import SimilarParts from './SimilarParts'
+import RoleSelection from "./RoleSelection"
 
 
 export default function CurationForm({ }) {
@@ -14,6 +15,7 @@ export default function CurationForm({ }) {
             <Group sx={{ alignItems: "flex-start" }}>
                 <Box sx={{ flexGrow: 1, flexBasis: 0, }}>
                     {sequenceComponent}
+                    <RoleSelection />
                     {textComponent}
                 </Box>
                 <Box>

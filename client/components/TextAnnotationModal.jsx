@@ -23,7 +23,7 @@ export default function TextAnnotationModal({ opened, onClose, onSubmit, values 
     // submit -- propagate event then treat like a cancel
     const handleSubmit = formValues => {
         onSubmit?.(formValues)
-        handleCancel()
+        onClose?.()
     }
 
     // key handlers
@@ -36,25 +36,14 @@ export default function TextAnnotationModal({ opened, onClose, onSubmit, values 
         form.setValues(values)
     }, [JSON.stringify(values)])
 
+
     return (
         <Modal opened={opened} onClose={handleCancel} title="Add Annotation" onKeyDown={keyHandler} closeOnClickOutside={true}>
             <form onSubmit={form.onSubmit(handleSubmit)}>
 
-                <MultiSelect
-                    label="Terms"
-                    data={form.getInputProps("terms").value}
-                    placeholder="Add Terms"
-                    searchable
-                    creatable
-                    getCreateLabel={query => `+ ${query}`}
-                    onCreate={query => query}
-                    {...form.getInputProps("terms")}
-                    mb={6}
-                    styles={multiSelectStyles}
-                />
-
                 <TextInput
                     label="Identifier"
+                    placeholder="Search ontologies or enter custom identifier"
                     {...form.getInputProps("id")}
                     mb={6}
                 />
@@ -63,6 +52,19 @@ export default function TextAnnotationModal({ opened, onClose, onSubmit, values 
                     label="URI"
                     {...form.getInputProps("idLink")}
                     mb={6}
+                />
+
+                <MultiSelect
+                    label="Terms"
+                    data={form.getInputProps("terms").value}
+                    placeholder="Add terms that should be recognized"
+                    searchable
+                    creatable
+                    getCreateLabel={query => `+ ${query}`}
+                    onCreate={query => query}
+                    {...form.getInputProps("terms")}
+                    mb={6}
+                    styles={multiSelectStyles}
                 />
 
                 <Group position="right" mt="md">

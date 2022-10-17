@@ -34,13 +34,18 @@ export default function useTextAnnotations() {
         <FormSection title="Description" rightSection={
             workingDescription ?
                 <Group spacing={6}>
-                    <ActionIcon onClick={() => setWorkingDescription(false)}><FaTimes /></ActionIcon>
+                    <ActionIcon onClick={() => setWorkingDescription(false)} color="red"><FaTimes /></ActionIcon>
                     <ActionIcon onClick={handleDescriptionEdit} color="green"><FaCheck /></ActionIcon>
                 </Group> :
                 <ActionIcon onClick={() => setWorkingDescription(description)}><FaPencilAlt /></ActionIcon>
         }>
             {workingDescription ?
-                <Textarea size="md" minRows={8} value={workingDescription} onChange={event => setWorkingDescription(event.currentTarget.value)} /> :
+                <Textarea
+                    size="md"
+                    minRows={8}
+                    value={workingDescription}
+                    onChange={event => setWorkingDescription(event.currentTarget.value)}
+                /> :
                 <TextHighlighter
                     terms={annotations.map((anno, i) =>
                         anno.terms.map(termText => {
