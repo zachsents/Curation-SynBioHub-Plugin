@@ -16,18 +16,17 @@ export default function RoleSelection() {
 
     useEffect(() => {
         searchSO(debouncedQuery).then(results => setSearchResults(
-            results
-                .map(result => {
-                    const fixedName = toTitleCase(result.document.name ?? "unknown")
-                    return {
-                        ...result.document,
-                        name: fixedName,
-                        // label: `${fixedName}, ${result.document.id}`,
-                        label: fixedName,
-                        value: result.document.id,
-                    }
-                })
-                .slice(0, 20)
+            results.slice(0, 20).map(result => {
+                const fixedName = toTitleCase(result.document.name ?? "unknown")
+                return {
+                    ...result.document,
+                    name: fixedName,
+                    // label: `${fixedName}, ${result.document.id}`,
+                    label: fixedName,
+                    value: result.document.id,
+                }
+            })
+
         ))
     }, [debouncedQuery])
 

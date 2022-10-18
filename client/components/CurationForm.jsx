@@ -3,6 +3,7 @@ import useSequenceAnnotations from '../hooks/useSequenceAnnotations'
 import useTextAnnotations from '../hooks/useTextAnnotations'
 import SimilarParts from './SimilarParts'
 import RoleSelection from "./RoleSelection"
+import ProteinSelection from './ProteinSelection'
 
 
 export default function CurationForm({ }) {
@@ -17,6 +18,7 @@ export default function CurationForm({ }) {
                     {sequenceComponent}
                     {textComponent}
                     <RoleSelection />
+                    <ProteinSelection />
                 </Box>
                 <Box>
                     <SimilarParts />
