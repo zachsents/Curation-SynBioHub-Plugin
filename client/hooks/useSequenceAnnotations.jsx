@@ -22,12 +22,12 @@ export default function useSequenceAnnotations() {
                     active: isAnnotationActive(anno.id) ?? false,
                 }))}
                 onChange={(id, val) => val ? selectAnnotation(id) : deselectAnnotation(id)}
-                h={500}
+                h={400}
                 offsetStart={-1}
                 wordMode={8}
                 textStyle={{
                     fontFamily: "monospace",
-                    fontSize: 16,
+                    fontSize: 14,
                     letterSpacing: 0.2,
                 }}
             >

@@ -1,9 +1,7 @@
 import { Group, Select, Text } from '@mantine/core'
 import { useDebouncedValue } from '@mantine/hooks'
-import { forwardRef } from 'react'
-import { useEffect } from 'react'
-import { useState } from 'react'
-import { useSequenceOntology } from '../hooks/useOntologies'
+import { forwardRef, useEffect, useState } from 'react'
+import { useSequenceOntology } from '../ontologies/so'
 import FormSection from './FormSection'
 
 export default function RoleSelection() {

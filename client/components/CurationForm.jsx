@@ -11,12 +11,12 @@ export default function CurationForm({ }) {
     const [textComponent, textAnnotationsComponent] = useTextAnnotations()
 
     return (
-        <Container>
+        <Container mb={300}>
             <Group sx={{ alignItems: "flex-start" }}>
                 <Box sx={{ flexGrow: 1, flexBasis: 0, }}>
                     {sequenceComponent}
-                    <RoleSelection />
                     {textComponent}
+                    <RoleSelection />
                 </Box>
                 <Box>
                     <SimilarParts />
