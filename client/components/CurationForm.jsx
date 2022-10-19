@@ -7,6 +7,7 @@ import ProteinSelection from './ProteinSelection'
 import SplitPanel from "./SplitPanel"
 import { useStore } from '../store'
 import TargetOrganismsSelection from './TargetOrganismsSelection'
+import SuggestedProteins from './SuggestedProteins'
 
 
 export default function CurationForm({ }) {
@@ -58,7 +59,7 @@ export default function CurationForm({ }) {
                 <Tabs.Panel value="proteins" pt={20}>
                     <SplitPanel
                         left={<ProteinSelection />}
-                        right={<></>}
+                        right={<SuggestedProteins />}
                     />
                 </Tabs.Panel>
             </Tabs>
