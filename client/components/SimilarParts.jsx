@@ -9,7 +9,7 @@ export default function SimilarParts() {
     const { similarParts } = useAppContext()
 
     return (
-        <FormSection title="Similar Parts" w={350}>
+        <FormSection title="Similar Parts">
             <ScrollArea styles={scrollAreaStyles}>
                 <Box sx={{ display: "flex", flexWrap: "wrap", }}>
                     {similarParts?.map(part =>

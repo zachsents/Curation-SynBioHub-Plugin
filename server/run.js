@@ -1,4 +1,4 @@
-import { findNewAnnotations, getSequence, isProduction, pullFreeText, renderFrontend, throwError } from "./util.js"
+import { findNewAnnotations, getPartName, getSequence, isProduction, pullFreeText, renderFrontend, throwError } from "./util.js"
 import fetch from "node-fetch"
 import fs from "fs/promises"
 import path from "path"
@@ -92,6 +92,7 @@ export default function run(app) {
         console.log(chalk.gray("Found ") + chalk.green(biobertResult.length) + chalk.gray(" potential annotations:"))
         console.log(chalk.green(biobertResult.map(a => a.mentions[0].text).join(", ")))
         
+        const partName = await getPartName(completeSbolContent)
         const sequence = await getSequence(completeSbolContent)
         
         // find similar parts
@@ -102,7 +103,8 @@ export default function run(app) {
 
         // create context to pass to client app
         const clientContext = {
-            sequence: sequence,
+            partName,
+            sequence,
             sequenceAnnotations: synbictAnnotations,
             freeText,
             textAnnotations: biobertResult,

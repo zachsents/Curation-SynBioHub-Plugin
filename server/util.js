@@ -54,6 +54,15 @@ export async function pullFreeText(sbolContent) {
         .flat()
 }
 
+export async function getPartName(sbolContent) {
+    // create and load original doc
+    const doc = new SBOL2GraphView(new Graph())
+    await doc.loadString(sbolContent)
+
+    // grab display ID from first ComponentDefinition
+    return doc.rootComponentDefinitions[0]?.displayId
+}
+
 export async function getSequence(sbolContent) {
     // create and load original doc
     const doc = new SBOL2GraphView(new Graph())

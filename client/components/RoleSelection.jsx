@@ -2,7 +2,6 @@ import { Group, Select, Text } from '@mantine/core'
 import { useDebouncedValue } from '@mantine/hooks'
 import { forwardRef, useEffect, useState } from 'react'
 import { useSequenceOntology } from '../ontologies/so'
-import FormSection from './FormSection'
 
 export default function RoleSelection() {
 
@@ -31,7 +30,8 @@ export default function RoleSelection() {
     }, [debouncedQuery])
 
     return (
-        <FormSection title="Role">
+        <Group spacing={40}>
+            <Text size="lg" weight={600} mt={20}>Role</Text>
             <Select
                 label={<Text color="dimmed" size="xs" ml={10}>{roleId}</Text>}
                 placeholder="Select the role for this part"
@@ -46,8 +46,9 @@ export default function RoleSelection() {
                 itemComponent={RoleItem}
                 filter={() => true}
                 styles={selectStyles}
+                sx={{ flexGrow: 1, }}
             />
-        </FormSection>
+        </Group>
     )
 }
 

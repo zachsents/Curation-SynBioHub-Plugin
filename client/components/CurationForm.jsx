@@ -1,9 +1,11 @@
-import { Container, Group, Box } from '@mantine/core'
+import { Container, Title, Tabs, Text, Space } from '@mantine/core'
 import useSequenceAnnotations from '../hooks/useSequenceAnnotations'
 import useTextAnnotations from '../hooks/useTextAnnotations'
 import SimilarParts from './SimilarParts'
 import RoleSelection from "./RoleSelection"
 import ProteinSelection from './ProteinSelection'
+import SplitPanel from "./SplitPanel"
+import { usePartInfoStore } from '../store'
 
 
 export default function CurationForm({ }) {
@@ -11,21 +13,52 @@ export default function CurationForm({ }) {
     const [sequenceComponent, sequenceAnnotationsComponent] = useSequenceAnnotations()
     const [textComponent, textAnnotationsComponent] = useTextAnnotations()
 
+    const partName = usePartInfoStore(s => s.name)
+
     return (
-        <Container mb={300}>
-            <Group sx={{ alignItems: "flex-start" }}>
-                <Box sx={{ flexGrow: 1, flexBasis: 0, }}>
-                    {sequenceComponent}
-                    {textComponent}
-                    <RoleSelection />
-                    <ProteinSelection />
-                </Box>
-                <Box>
-                    <SimilarParts />
-                    {sequenceAnnotationsComponent}
-                    {textAnnotationsComponent}
-                </Box>
-            </Group>
+        <Container mb={100}>
+
+            <Tabs defaultValue="overview">
+                <Tabs.List>
+                    <Tabs.Tab value="overview">Overview</Tabs.Tab>
+                    <Tabs.Tab value="sequence">Sequence</Tabs.Tab>
+                    <Tabs.Tab value="text">Text</Tabs.Tab>
+                    <Tabs.Tab value="proteins">Proteins</Tabs.Tab>
+                </Tabs.List>
+
+                <Tabs.Panel value="overview" pt={20}>
+                    <SplitPanel
+                        left={<>
+                            <Title order={2} mb={10}>{partName}</Title>
+                            <Text color="dimmed">dscription</Text>
+                            <Space h={20} />
+                            <RoleSelection />
+                        </>}
+                        right={<SimilarParts />}
+                    />
+                </Tabs.Panel>
+
+                <Tabs.Panel value="sequence" pt={20}>
+                    <SplitPanel
+                        left={sequenceComponent}
+                        right={sequenceAnnotationsComponent}
+                    />
+                </Tabs.Panel>
+
+                <Tabs.Panel value="text" pt={20}>
+                    <SplitPanel
+                        left={textComponent}
+                        right={textAnnotationsComponent}
+                    />
+                </Tabs.Panel>
+
+                <Tabs.Panel value="proteins" pt={20}>
+                    <SplitPanel
+                        left={<ProteinSelection />}
+                        right={<></>}
+                    />
+                </Tabs.Panel>
+            </Tabs>
         </Container>
     )
 }

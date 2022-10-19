@@ -1,4 +1,4 @@
-import { ActionIcon, Card, Group, Loader, Select, Text } from '@mantine/core'
+import { ActionIcon, Card, Group, Loader, Select, Text, Tooltip } from '@mantine/core'
 import { useDebouncedValue, useListState } from '@mantine/hooks'
 import { forwardRef, useEffect, useState } from 'react'
 import { useUniprot } from '../ontologies/uniprot'
@@ -71,17 +71,27 @@ export default function ProteinSelection() {
 }
 
 const ProteinItem = forwardRef(({ name, organism, id, uri, onRemove }, ref) =>
-    <Group noWrap ref={ref} spacing="xs" sx={theme => ({
-        padding: "8px 12px",
-        margin: 8,
-        border: "1px solid " + theme.colors.gray[3],
-        borderRadius: 24,
-        display: "inline-flex",
-    })}>
-        <Text size="sm">{name}</Text>
-        <Text size="sm" color="dimmed">{organism}</Text>
-        <ActionIcon color="red" onClick={onRemove}><FaTimes /></ActionIcon>
-    </Group>
+    <a href={uri} target="_blank">
+        <Tooltip label="View in UniProt" withArrow position="bottom">
+            <Group noWrap ref={ref} spacing="xs" sx={theme => ({
+                padding: "8px 12px",
+                margin: 8,
+                border: "1px solid " + theme.colors.gray[3],
+                borderRadius: 24,
+                display: "inline-flex",
+                "&:hover": {
+                    borderColor: theme.colors.gray[5],
+                }
+            })}>
+                <Text size="sm" color="dark">{name}</Text>
+                <Text size="sm" color="dimmed">{organism}</Text>
+                <ActionIcon color="red" onClick={event => {
+                    event.preventDefault()
+                    onRemove()
+                }}><FaTimes /></ActionIcon>
+            </Group>
+        </Tooltip>
+    </a>
 )
 
 const ProtienSearchItem = forwardRef(({ label, organism, name, ...others }, ref) =>

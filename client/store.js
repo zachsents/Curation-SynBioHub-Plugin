@@ -3,7 +3,7 @@ import create from "zustand"
 
 export let useSequenceStore = () => ({})
 export let useTextStore = () => ({})
-
+export let usePartInfoStore = () => ({})
 
 /*
     Standard set of actions for annotations
@@ -50,5 +50,10 @@ export default function createStore(context) {
         annotations: context?.textAnnotations,
         setDescription: description => set(() => ({ description })),
         ...annotationActions(set, get),
+    }))
+
+    // General part info -- TO DO: shift everything into single store
+    usePartInfoStore = create((set, get) => ({
+        name: context?.partName,
     }))
 }
