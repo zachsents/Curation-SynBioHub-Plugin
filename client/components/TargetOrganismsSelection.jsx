@@ -8,42 +8,42 @@ import shallow from 'zustand/shallow'
 import MultiRowSelect from './MultiRowSelect'
 
 
-export default function ProteinSelection() {
+export default function TargetOrganismsSelection() {
 
     const {
-        items: proteins,
-        add: addProtein,
-        remove: removeProtein
-    } = useStore(s => s.proteins, shallow)
-
-    const searchUniprot = useUniprot("uniprotkb", result => ({
-        id: result.uniProtkbId,
-        name: result.proteinDescription?.recommendedName?.fullName?.value,
-        organism: result.organism?.scientificName,
-        uri: `https://www.uniprot.org/entry/${result.uniProtkbId}`,
+        items: organisms,
+        add: addOrganism,
+        remove: removeOrganism
+    } = useStore(s => s.targetOrganisms, shallow)
+    
+    const searchUniprot = useUniprot("taxonomy", result => ({
+        id: result.taxonId,
+        name: result.scientificName,
+        commonName: result.commonName ?? "",
+        uri: `https://www.uniprot.org/taxonomy/${result.taxonId}`,
     }))
 
     return (
-        <FormSection title="Proteins">
+        <FormSection title="Target Organisms">
             <MultiRowSelect
-                items={proteins}
-                addItem={addProtein}
-                removeItem={removeProtein}
+                items={organisms}
+                addItem={addOrganism}
+                removeItem={removeOrganism}
                 search={searchUniprot}
-                itemComponent={ProteinItem}
-                searchItemComponent={ProtienSearchItem}
-                messages={{ initial: "Type something to search UniProt", nothingFound: "Nothing found in UniProt" }}
-                pluralLabel="proteins"
+                itemComponent={OrganismItem}
+                searchItemComponent={OrganismSearchItem}
+                messages={{ initial: "Type something to search", nothingFound: "Nothing found in Taxonomy" }}
+                pluralLabel="organisms"
                 debounce={800}
-                placeholder="Search UniProt..."
+                placeholder="Search Taxonomy..."
             />
         </FormSection>
     )
 }
 
-const ProteinItem = forwardRef(({ name, organism, id, uri, onRemove }, ref) =>
+const OrganismItem = forwardRef(({ id, name, commonName, uri, onRemove }, ref) =>
     <a href={uri} target="_blank">
-        <Tooltip label="View in UniProt" withArrow position="bottom">
+        <Tooltip label="View in Taxonomy" withArrow position="bottom">
             <Group noWrap ref={ref} spacing="xs" sx={theme => ({
                 padding: "8px 12px",
                 margin: 8,
@@ -55,7 +55,7 @@ const ProteinItem = forwardRef(({ name, organism, id, uri, onRemove }, ref) =>
                 }
             })}>
                 <Text size="sm" color="dark">{name}</Text>
-                <Text size="sm" color="dimmed">{organism}</Text>
+                <Text size="sm" color="dimmed">{commonName}</Text>
                 <ActionIcon color="red" onClick={event => {
                     event.preventDefault()
                     onRemove()
@@ -65,11 +65,11 @@ const ProteinItem = forwardRef(({ name, organism, id, uri, onRemove }, ref) =>
     </a>
 )
 
-const ProtienSearchItem = forwardRef(({ label, organism, name, ...others }, ref) =>
+const OrganismSearchItem = forwardRef(({ label, name, commonName, ...others }, ref) =>
     <div ref={ref} {...others}>
         <Group noWrap position="apart">
             <Text>{name}</Text>
-            <Text color="dimmed">{organism}</Text>
+            <Text color="dimmed">{commonName}</Text>
         </Group>
     </div>
 )

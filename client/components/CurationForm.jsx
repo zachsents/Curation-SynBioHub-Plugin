@@ -6,6 +6,7 @@ import RoleSelection from "./RoleSelection"
 import ProteinSelection from './ProteinSelection'
 import SplitPanel from "./SplitPanel"
 import { useStore } from '../store'
+import TargetOrganismsSelection from './TargetOrganismsSelection'
 
 
 export default function CurationForm({ }) {
@@ -33,6 +34,8 @@ export default function CurationForm({ }) {
                             <Text color="dimmed">dscription</Text>
                             <Space h={20} />
                             <RoleSelection />
+                            <Space h={40} />
+                            <TargetOrganismsSelection />
                         </>}
                         right={<SimilarParts />}
                     />

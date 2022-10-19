@@ -27,8 +27,8 @@ const annotationActions = (set, get, selector) => {
             const annoArr = selector(draft)
             annoArr.splice(annoArr.findIndex(anno => anno.id == id), 1)
         })),
-        selectAnnotation: id => setAnnotationProp(id, active, true),
-        deselectAnnotation: id => setAnnotationProp(id, active, false),
+        selectAnnotation: id => setAnnotationProp(id, "active", true),
+        deselectAnnotation: id => setAnnotationProp(id, "active", false),
         getAnnotation,
         isAnnotationActive: id => getAnnotation(id)?.active,
     }
@@ -44,8 +44,9 @@ export default function createStore(context) {
     useStore = create((set, get) => ({
         name: context?.partName,
 
-        description: context?.freeText,
-        setDescription: description => set(() => ({ description })),
+        // description
+        ...createValueAdapter(set, "description", "setDescription", context?.freeText),
+
         textAnnotations: context?.textAnnotations,
         textAnnotationActions: annotationActions(set, get, state => state.textAnnotations),
 
@@ -53,15 +54,29 @@ export default function createStore(context) {
         sequenceAnnotations: context?.sequenceAnnotations,
         sequenceAnnotationActions: annotationActions(set, get, state => state.sequenceAnnotations),
 
-        role: null,
-        setRole: role => set(() => ({ role })),
+        // role
+        ...createValueAdapter(set, "role", "setRole"),
 
-        proteins: [],
-        addProtein: protein => set(produce(draft => {
-            draft.proteins.push(protein)
-        })),
-        removeProtein: id => set(produce(draft => {
-            draft.proteins.splice(draft.proteins.findIndex(prot => prot.id == id), 1)
-        })),
+        proteins: createListAdapter(set, state => state.proteins),
+        targetOrganisms: createListAdapter(set, state => state.targetOrganisms),
     }))
+}
+
+function createValueAdapter(set, key, setterKey, initial = null) {
+    return {
+        [key]: initial,
+        [setterKey]: newValue => set(() => ({ [key]: newValue })),
+    }
+}
+
+function createListAdapter(set, selector) {
+    return {
+        items: [],
+        add: item => set(produce(draft => {
+            selector(draft).items.push(item)
+        })),
+        remove: id => set(produce(draft => {
+            selector(draft).items.splice(selector(draft).items.findIndex(item => item.id == id), 1)
+        })),
+    }
 }
