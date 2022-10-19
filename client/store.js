@@ -1,34 +1,38 @@
 import create from "zustand"
+import produce from "immer"
 
-
-export let useSequenceStore = () => ({})
-export let useTextStore = () => ({})
-export let usePartInfoStore = () => ({})
+export let useStore = () => ({})
 
 /*
     Standard set of actions for annotations
 */
-const annotationActions = (set, get) => ({
-    editAnnotation: (id, changes) => set(state => {
-        const index = state.annotations.findIndex(anno => anno.id == id)    // grab item index so we maintain order
-        const newAnnotations = [...state.annotations]                       // clone array
-        newAnnotations[index] = {                                           // create new object at old one's index
-            ...state.annotations[index],
-            ...changes
-        }
-        return { annotations: newAnnotations }
-    }),
-    addAnnotation: newAnno => set(state => ({
-        annotations: [...state.annotations, newAnno]
-    })),
-    removeAnnotation: id => set(state => ({
-        annotations: state.annotations.filter(anno => anno.id != id)
-    })),
-    selectAnnotation: id => get().editAnnotation(id, { active: true }),
-    deselectAnnotation: id => get().editAnnotation(id, { active: false }),
-    getAnnotation: id => get().annotations.find(anno => anno.id == id),
-    isAnnotationActive: id => get().getAnnotation(id)?.active
-})
+const annotationActions = (set, get, selector) => {
+
+    const getAnnotation = id => selector(get()).find(anno => anno.id == id)
+    const setAnnotationProp = (id, propKey, value) => set(produce(draft => {
+        selector(draft).find(anno => anno.id == id)[propKey] = value
+    }))
+
+    return {
+        editAnnotation: (id, changes) => set(produce(draft => {
+            const annoArr = selector(draft)
+            const item = annoArr.find(anno => anno.id == id)
+            const itemIndex = annoArr.indexOf(item)
+            annoArr[itemIndex] = { ...item, ...changes }
+        })),
+        addAnnotation: newAnno => set(produce(draft => {
+            selector(draft).push(newAnno)
+        })),
+        removeAnnotation: id => set(produce(draft => {
+            const annoArr = selector(draft)
+            annoArr.splice(annoArr.findIndex(anno => anno.id == id), 1)
+        })),
+        selectAnnotation: id => setAnnotationProp(id, active, true),
+        deselectAnnotation: id => setAnnotationProp(id, active, false),
+        getAnnotation,
+        isAnnotationActive: id => getAnnotation(id)?.active,
+    }
+}
 
 
 /*
@@ -37,23 +41,27 @@ const annotationActions = (set, get) => ({
 */
 export default function createStore(context) {
 
-    // Sequence
-    useSequenceStore = create((set, get) => ({
-        sequence: context?.sequence,
-        annotations: context?.sequenceAnnotations,
-        ...annotationActions(set, get),
-    }))
-
-    // Description / Free Text
-    useTextStore = create((set, get) => ({
-        description: context?.freeText,
-        annotations: context?.textAnnotations,
-        setDescription: description => set(() => ({ description })),
-        ...annotationActions(set, get),
-    }))
-
-    // General part info -- TO DO: shift everything into single store
-    usePartInfoStore = create((set, get) => ({
+    useStore = create((set, get) => ({
         name: context?.partName,
+
+        description: context?.freeText,
+        setDescription: description => set(() => ({ description })),
+        textAnnotations: context?.textAnnotations,
+        textAnnotationActions: annotationActions(set, get, state => state.textAnnotations),
+
+        sequence: context?.sequence,
+        sequenceAnnotations: context?.sequenceAnnotations,
+        sequenceAnnotationActions: annotationActions(set, get, state => state.sequenceAnnotations),
+
+        role: null,
+        setRole: role => set(() => ({ role })),
+
+        proteins: [],
+        addProtein: protein => set(produce(draft => {
+            draft.proteins.push(protein)
+        })),
+        removeProtein: id => set(produce(draft => {
+            draft.proteins.splice(draft.proteins.findIndex(prot => prot.id == id), 1)
+        })),
     }))
 }

@@ -1,12 +1,12 @@
 import { NavLink } from '@mantine/core'
 import { useDisclosure } from '@mantine/hooks'
 import { FaPlus } from "react-icons/fa"
-import { useTextStore } from '../store'
+import { useStore } from '../store'
 import TextAnnotationModal from './TextAnnotationModal'
 
 export default function AddTextAnnotation() {
 
-    const addAnnotation = useTextStore(state => state.addAnnotation)
+    const addAnnotation = useStore(s => s.textAnnotationActions.addAnnotation)
 
     const [modalOpened, modal] = useDisclosure(false)
 

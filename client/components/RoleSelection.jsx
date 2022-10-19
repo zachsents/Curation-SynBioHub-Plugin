@@ -2,6 +2,8 @@ import { Group, Select, Text } from '@mantine/core'
 import { useDebouncedValue } from '@mantine/hooks'
 import { forwardRef, useEffect, useState } from 'react'
 import { useSequenceOntology } from '../ontologies/so'
+import { useStore } from '../store'
+import shallow from 'zustand/shallow'
 
 export default function RoleSelection() {
 
@@ -11,7 +13,7 @@ export default function RoleSelection() {
     const searchSO = useSequenceOntology()
     const [searchResults, setSearchResults] = useState([])
 
-    const [roleId, setRoleId] = useState(null)
+    const [role, setRole] = useStore(s => [s.role, s.setRole], shallow)
 
     useEffect(() => {
         searchSO(debouncedQuery).then(results => setSearchResults(
@@ -33,10 +35,10 @@ export default function RoleSelection() {
         <Group spacing={40}>
             <Text size="lg" weight={600} mt={20}>Role</Text>
             <Select
-                label={<Text color="dimmed" size="xs" ml={10}>{roleId}</Text>}
+                label={<Text color="dimmed" size="xs" ml={10}>{role}</Text>}
                 placeholder="Select the role for this part"
-                value={roleId}
-                onChange={setRoleId}
+                value={role}
+                onChange={setRole}
                 searchable
                 onSearchChange={onSearchChange}
                 searchValue={searchValue}

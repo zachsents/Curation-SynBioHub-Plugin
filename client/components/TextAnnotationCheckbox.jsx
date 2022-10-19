@@ -1,21 +1,19 @@
+import { useState } from 'react'
+import { useStore } from '../store'
 import { ActionIcon, Box, Group, Tooltip } from '@mantine/core'
 import { useClickOutside, useDisclosure } from '@mantine/hooks'
-import { useState } from 'react'
-import { FaPencilAlt, FaTrashAlt } from 'react-icons/fa'
-import { useTextStore } from '../store'
 import AnnotationCheckbox from './AnnotationCheckbox'
 import TextAnnotationModal from './TextAnnotationModal'
 import TextLink from "./TextLink"
+import { FaPencilAlt, FaTrashAlt } from 'react-icons/fa'
+
 
 export default function TextAnnotationCheckbox({ id, color }) {
 
     // grab state from store
-    const annotation = useTextStore(s => s.annotations.find(anno => anno.id == id))
-    const isAnnotationActive = useTextStore(s => s.isAnnotationActive)
-    const selectAnnotation = useTextStore(s => s.selectAnnotation)
-    const deselectAnnotation = useTextStore(s => s.deselectAnnotation)
-    const editAnnotation = useTextStore(s => s.editAnnotation)
-    const removeAnnotation = useTextStore(s => s.removeAnnotation)
+    const annotation = useStore(s => s.textAnnotationActions.getAnnotation(id))
+    const { isAnnotationActive, selectAnnotation, deselectAnnotation,
+        editAnnotation, removeAnnotation } = useStore(s => s.textAnnotationActions)
 
     // editing state and handlers
     const [editing, editingHandlers] = useDisclosure(false)

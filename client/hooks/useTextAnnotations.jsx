@@ -5,20 +5,17 @@ import AddTextAnnotation from "../components/AddTextAnnotation"
 import FormSection from "../components/FormSection"
 import TextAnnotationCheckbox from "../components/TextAnnotationCheckbox"
 import TextHighlighter from "../components/TextHighlighter"
-import { useTextStore } from "../store"
+import { useStore } from "../store"
 import { useCyclicalColors } from "./hooks"
 
 
 export default function useTextAnnotations() {
 
-    const {
-        description,
-        setDescription,
-        annotations,
-        isAnnotationActive,
-        selectAnnotation,
-        deselectAnnotation,
-    } = useTextStore()
+    // pull out what we need from the store
+    const description = useStore(s => s.description)
+    const setDescription = useStore(s => s.setDescription)
+    const annotations = useStore(s => s.textAnnotations)
+    const { isAnnotationActive, selectAnnotation, deselectAnnotation } = useStore(s => s.textAnnotationActions)
 
     // create a set of contrasty colors
     const colors = useCyclicalColors(annotations.length)

@@ -1,22 +1,27 @@
-import { ActionIcon, Card, Group, Loader, Select, Text, Tooltip } from '@mantine/core'
-import { useDebouncedValue, useListState } from '@mantine/hooks'
+import { ActionIcon, Group, Loader, Select, Text, Tooltip } from '@mantine/core'
+import { useDebouncedValue } from '@mantine/hooks'
 import { forwardRef, useEffect, useState } from 'react'
 import { useUniprot } from '../ontologies/uniprot'
 import FormSection from './FormSection'
 import { FaTimes } from "react-icons/fa"
+import { useStore } from '../store'
+import shallow from 'zustand/shallow'
+
 
 export default function ProteinSelection() {
 
     // selected proteins states
-    const [proteins, proteinHandlers] = useListState()
+    const [proteins, addProtein, removeProtein] = useStore(s => [s.proteins, s.addProtein, s.removeProtein], shallow)
+
+    // console.log(proteins)
+    
+
     const handleSelection = selected => {
         setQuery("")
         !proteins.find(prot => prot.id == selected) &&
-            proteinHandlers.append(searchResults.find(result => result.id == selected))
+            addProtein(searchResults.find(result => result.id == selected))
     }
-    const handleRemove = id => {
-        proteinHandlers.remove(proteins.findIndex(prot => prot.id == id))
-    }
+    const handleRemove = id => removeProtein(id)
 
     // search states
     const searchUniprot = useUniprot()
@@ -57,7 +62,7 @@ export default function ProteinSelection() {
                 searchable
                 onSearchChange={handleSearchChange}
                 searchValue={query}
-                nothingFound="No options"
+                nothingFound={query ? searchLoading ? "..." : "Nothing found in UniProt" : "Type something to search UniProt"}
                 data={searchResults ?? []}
                 dropdownPosition="bottom"
                 itemComponent={ProtienSearchItem}

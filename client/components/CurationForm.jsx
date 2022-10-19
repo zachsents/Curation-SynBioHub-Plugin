@@ -5,7 +5,7 @@ import SimilarParts from './SimilarParts'
 import RoleSelection from "./RoleSelection"
 import ProteinSelection from './ProteinSelection'
 import SplitPanel from "./SplitPanel"
-import { usePartInfoStore } from '../store'
+import { useStore } from '../store'
 
 
 export default function CurationForm({ }) {
@@ -13,7 +13,7 @@ export default function CurationForm({ }) {
     const [sequenceComponent, sequenceAnnotationsComponent] = useSequenceAnnotations()
     const [textComponent, textAnnotationsComponent] = useTextAnnotations()
 
-    const partName = usePartInfoStore(s => s.name)
+    const partName = useStore(s => s.name)
 
     return (
         <Container mb={100}>

@@ -1,12 +1,15 @@
 import AnnotationCheckbox from "../components/AnnotationCheckbox"
 import FormSection from "../components/FormSection"
 import TextHighlighter from "../components/TextHighlighter"
-import { useSequenceStore } from "../store"
+import { useStore } from "../store"
 import { useCyclicalColors } from "./hooks"
 
 export default function useSequenceAnnotations() {
 
-    const { sequence, annotations, isAnnotationActive, selectAnnotation, deselectAnnotation } = useSequenceStore()
+    // pull out what we need from the store
+    const sequence = useStore(s => s.sequence)
+    const annotations = useStore(s => s.sequenceAnnotations)
+    const { isAnnotationActive, selectAnnotation, deselectAnnotation } = useStore(s => s.sequenceAnnotationActions)
 
     // create a set of contrasty colors
     const colors = useCyclicalColors(annotations.length)
