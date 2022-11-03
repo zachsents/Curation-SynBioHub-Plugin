@@ -17,10 +17,11 @@ export default function ProteinSelection() {
     } = useStore(s => s.proteins, shallow)
 
     const searchUniprot = useUniprot("uniprotkb", result => ({
-        id: result.uniProtkbId,
+        id: result.primaryAccession,
         name: result.proteinDescription?.recommendedName?.fullName?.value,
         organism: result.organism?.scientificName,
-        uri: `https://www.uniprot.org/entry/${result.uniProtkbId}`,
+        identifier: `UniProt:${result.primaryAccession}`,
+        uri: `https://identifiers.org/UniProt:${result.primaryAccession}`,
     }))
 
     return (
@@ -41,7 +42,7 @@ export default function ProteinSelection() {
     )
 }
 
-const ProteinItem = forwardRef(({ name, organism, id, uri, onRemove }, ref) =>
+const ProteinItem = forwardRef(({ name, organism, identifier, uri, onRemove }, ref) =>
     <a href={uri} target="_blank">
         <Tooltip label="View in UniProt" withArrow position="bottom">
             <Group noWrap ref={ref} spacing="xs" sx={theme => ({

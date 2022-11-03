@@ -15,10 +15,11 @@ export default function SuggestedProteins() {
     const addProtein = useStore(s => s.proteins.add)
 
     const searchUniprot = useUniprot("uniprotkb", result => ({
-        id: result.uniProtkbId,
+        id: result.primaryAccession,
         name: result.proteinDescription?.recommendedName?.fullName?.value,
         organism: result.organism?.scientificName,
-        uri: `https://www.uniprot.org/entry/${result.uniProtkbId}`,
+        identifier: `UniProt:${result.primaryAccession}`,
+        uri: `https://identifiers.org/UniProt:${result.primaryAccession}`,
     }), {
         size: 2
     })
@@ -59,7 +60,7 @@ export default function SuggestedProteins() {
             <ActionIcon onClick={refresh}><HiRefresh /></ActionIcon>
         }>
             {suggested.map((protein, i) =>
-                <Group noWrap position="apart" px={10} py={5} sx={suggestedItemStyle} onClick={() => handleAdd(protein, i)}>
+                <Group noWrap position="apart" px={10} py={5} sx={suggestedItemStyle} onClick={() => handleAdd(protein, i)} key={protein.id + i}>
                     <Group noWrap>
                         <Text color="dimmed"><FaPlus /></Text>
                         <Box>

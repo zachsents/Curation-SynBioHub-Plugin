@@ -1,4 +1,4 @@
-import { ActionIcon, Group, Text, Tooltip } from '@mantine/core'
+import { ActionIcon, Checkbox, Group, Text, Tooltip } from '@mantine/core'
 import { forwardRef } from 'react'
 import { useUniprot } from '../ontologies/uniprot'
 import FormSection from './FormSection'
@@ -6,6 +6,7 @@ import { FaTimes } from "react-icons/fa"
 import { useStore } from '../store'
 import shallow from 'zustand/shallow'
 import MultiRowSelect from './MultiRowSelect'
+import { useSetState } from '@mantine/hooks'
 
 
 export default function TargetOrganismsSelection() {
@@ -15,13 +16,36 @@ export default function TargetOrganismsSelection() {
         add: addOrganism,
         remove: removeOrganism
     } = useStore(s => s.targetOrganisms, shallow)
-    
+
+    const [searchOptions, setSearchOptions] = useSetState({
+        prioritizeParents: true,
+    })
+
     const searchUniprot = useUniprot("taxonomy", result => ({
         id: result.taxonId,
         name: result.scientificName,
         commonName: result.commonName ?? "",
         uri: `https://www.uniprot.org/taxonomy/${result.taxonId}`,
+        parent: result.parent?.taxonId,
     }))
+
+    const searchWithParent = async query => {
+        // do regular search
+        const results = await searchUniprot(query)
+
+        // take the top 3 results and search their parents
+        await Promise.all(
+            results.slice(0, 3).map(async result => {
+                const parentResult = (await searchUniprot(result.parent))[0]
+
+                // splice in parent result if it's not already in the list
+                if (!results.find(item => item.id == parentResult.id))
+                    results.splice(results.indexOf(result), 0, parentResult)
+            })
+        )
+
+        return results
+    }
 
     return (
         <FormSection title="Target Organisms">
@@ -29,7 +53,7 @@ export default function TargetOrganismsSelection() {
                 items={organisms}
                 addItem={addOrganism}
                 removeItem={removeOrganism}
-                search={searchUniprot}
+                search={searchOptions.prioritizeParents ? searchWithParent : searchUniprot}
                 itemComponent={OrganismItem}
                 searchItemComponent={OrganismSearchItem}
                 messages={{ initial: "Type something to search", nothingFound: "Nothing found in Taxonomy" }}
@@ -37,6 +61,9 @@ export default function TargetOrganismsSelection() {
                 debounce={800}
                 placeholder="Search Taxonomy..."
             />
+            <Group mt={10} px={2}>
+                <Checkbox size="xs" label="Prioritize parents in search" checked={searchOptions.prioritizeParents} onChange={event => setSearchOptions({ prioritizeParents: event.currentTarget.checked })} />
+            </Group>
         </FormSection>
     )
 }
